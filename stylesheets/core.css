@@ -8,3 +8,12 @@
     width: 100%;
     overflow:hidden;
 }
+
+/* Prevent img CSS from messing up map tiles */
+#map_canvas img {
+    max-width: none;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+	border: none;
+}

@@ -81,7 +81,9 @@ time, mark, audio, video {
   font: inherit;
   vertical-align: baseline;
 }
+
 /* HTML5 display-role reset for older browsers */
+
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
   display: block;
@@ -422,6 +424,7 @@ blockquote {
   background: transparent url('../images/blockquote-gfx.png') 0 4px no-repeat;
 }
 
+/* Note: this img CSS adds lines to the Google map tiles */
 img {
   -webkit-box-shadow: 0px 2px 0px #bdb6ad;
   -moz-box-shadow: 0px 2px 0px #bdb6ad;

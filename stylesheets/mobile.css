@@ -285,7 +285,7 @@ footer span.left-tail, footer span.right-tail {
   background: transparent url(../images/small-ribbon-tail-sprite-2x.png) 0 0 no-repeat;
   position: absolute;
   top: -126px;
-  z-index: 0;
+  z-index: -10;
 }
 
 footer span.left-tail {
