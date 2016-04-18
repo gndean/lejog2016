@@ -105,7 +105,7 @@ function createMarker(map, latlng) {
         position: latlng,
         map: map,
         icon: {
-        	url: "http://pedalthe.bike/images/cycle-anim-e.gif",
+        	url: "https://pedalthe.bike/images/cycle-anim-e.gif",
           anchor: new google.maps.Point(18, 26)
         },
         optimized:true // Set to false to animate the gif
@@ -175,14 +175,14 @@ function animateMarker(targetDist, step, totalDist)
       
       // Convert bearing into most appropriate icon
       if (bearing > 67) {
-      	marker.icon.url = "http://pedalthe.bike/images/cycle-anim-n.gif";
+      	marker.icon.url = "https://pedalthe.bike/images/cycle-anim-n.gif";
       }
       else if (bearing > 22) {
       	debugger;
-      	marker.icon.url = "http://pedalthe.bike/images/cycle-anim-ne.gif";
+      	marker.icon.url = "https://pedalthe.bike/images/cycle-anim-ne.gif";
       }
       else {
-      	marker.icon.url = "http://pedalthe.bike/images/cycle-anim-e.gif";
+      	marker.icon.url = "https://pedalthe.bike/images/cycle-anim-e.gif";
       }
     }
 
@@ -192,7 +192,7 @@ function animateMarker(targetDist, step, totalDist)
   }
   else {
   	// Stop animation and show default icon
-  	marker.icon.url = "http://pedalthe.bike/images/cycle-anim-e.gif";
+  	marker.icon.url = "https://pedalthe.bike/images/cycle-anim-e.gif";
   	marker.optimized = true;
     
     // Display a summary message
