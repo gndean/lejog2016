@@ -12,6 +12,21 @@ var markerLatLngHistory = []
 var totalDonations = null;
 var lastDonorName = null;
 
+var summaryMsgs = [
+	["Some way to go yet!", "Just getting started!", "A long way to go yet!"], // 0%
+	["A great start!", "Underway now!", "Just getting warmed up!"], // 10%
+	["Around quarter distance", "Get the rhythm now!", "In the groove!"], // 20%
+	["Making progress!", "Carvin' up the miles!", "In the flow!"], // 30%
+	["Approaching half way!", "Going strong!", "Making progress!"], // 40%
+	["Over half way!", "Broken the back of it now!", "Entering the second half"], // 50%
+	["Going strong!", "Wow!", "Full of momentum now!"], // 60%
+	["Really getting there!", "Not too far to go now!", "C'mon!"], // 70%
+	["Into the last quarter now!", "Not far now!", "Keep giving!"], // 80%
+	["On the home straight now!", "Can almost walk from here!", "Just one final push!"], // 90%
+	["Amazing job!", "Wow! Done it!", "Superb effort!"] // 100%
+];
+	
+
 function initialize() {
     var directionsDisplay = new google.maps.DirectionsRenderer({
         suppressMarkers: true
@@ -205,8 +220,15 @@ function animateMarker(targetDist, step, totalDist)
     
     // Display a summary message
     infoMsg = Math.round(totalDonations) + " out of " + Math.round(totalDist / MILES_TO_METRES) + " miles sponsored so far...";
-    infoMsg += "<br/>We're off to a good start!"
-    infoMsg += "<p>Thanks so much to <em>" + lastDonorName + "</em> for the recent sponsor<br/>and to everyone for your support.</p>"
+	
+	// Choose an appropriate message
+	var msgIndex = Math.floor(targetDist * (summaryMsgs.length - 1) / totalDist);
+	msgIndex = Math.min(summaryMsgs.length - 1, msgIndex);
+	msgIndex = Math.max(0, msgIndex);
+  
+    infoMsg += "<br/>" + summaryMsgs[msgIndex][Math.floor(Math.random() * summaryMsgs[msgIndex].length)];
+    infoMsg += "<p>Thanks so much to <em>";
+	infoMsg += lastDonorName ? lastDonorName : "secret squirrel" + "</em> for the recent sponsor<br/>and to everyone for your support.</p>"
     infoWindow = new google.maps.InfoWindow({
     	content: infoMsg
     });
@@ -268,7 +290,6 @@ function getFundraiserDetails()
       	totalDonations += parseFloat(don[d].amount);
         lastDonorName = don[d].donorDisplayName;
       }
-	  totalDonations = 1200;
 	  
 	  // Start the animation in a little bit
 	  setTimeout(function(){ startAnimation(); }, 3000);
