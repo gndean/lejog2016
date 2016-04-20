@@ -228,7 +228,8 @@ function animateMarker(targetDist, step, totalDist)
   
     infoMsg += "<br/>" + summaryMsgs[msgIndex][Math.floor(Math.random() * summaryMsgs[msgIndex].length)];
     infoMsg += "<p>Thanks so much to <em>";
-	infoMsg += lastDonorName ? lastDonorName : "secret squirrel" + "</em> for the recent sponsor<br/>and to everyone for your support.</p>"
+	infoMsg += lastDonorName ? lastDonorName : "secret squirrel";
+	infoMsg += "</em> for the recent sponsor<br/>and to everyone for your support.</p>"
     infoWindow = new google.maps.InfoWindow({
     	content: infoMsg
     });
