@@ -28,6 +28,9 @@ function initialize() {
    
     // Make async request to populate fundraising details
     getFundraiserDetails();
+	
+	// Set up replay option
+	$("#play_animation").click(function() { startAnimation(); return(false); } );
 }
 
 function calcRoute(directionsDisplay) {
@@ -94,7 +97,6 @@ function calcRoute(directionsDisplay) {
         if (status == google.maps.DirectionsStatus.OK) {
             directionsDisplay.setDirections(response);
             route = response.routes[0];
-            //debugger;
         }
     });
 }
@@ -112,8 +114,8 @@ function createMarker(map, latlng) {
     });
 }
 
-function jumpToDistance() {
-	var targetDist = document.getElementById("distance").value;
+function startAnimation() {
+  var targetDist = totalDonations
   targetDist *= MILES_TO_METRES;
   
   // Validate stuff
@@ -130,12 +132,19 @@ function jumpToDistance() {
   targetDist = Math.min(totalDist, targetDist)
   targetDist = Math.max(0, targetDist)
   
+  // Clear any existing info window
+  if (infoWindow) {
+	  infoWindow.close();
+  }
+  
+  $("#play_animation").hide();
+  
   // Cancel any previous animation
   if (markerTimerHandle) {
   	clearTimeout(markerTimerHandle);
   }
   // Start movement of marker
-	animateMarker(targetDist, 0, totalDist)
+  animateMarker(targetDist, 0, totalDist)
   marker.optimized = false; // Set GIF animating
   // Reset history of marker positions
   markerLatLngHistory = []; 
@@ -178,7 +187,6 @@ function animateMarker(targetDist, step, totalDist)
       	marker.icon.url = "https://pedalthe.bike/images/cycle-anim-n.gif";
       }
       else if (bearing > 22) {
-      	debugger;
       	marker.icon.url = "https://pedalthe.bike/images/cycle-anim-ne.gif";
       }
       else {
@@ -196,13 +204,16 @@ function animateMarker(targetDist, step, totalDist)
   	marker.optimized = true;
     
     // Display a summary message
-    infoMsg = Math.round(targetDist / MILES_TO_METRES) + " out of " + Math.round(totalDist / MILES_TO_METRES) + " miles sponsored so far...";
+    infoMsg = Math.round(totalDonations) + " out of " + Math.round(totalDist / MILES_TO_METRES) + " miles sponsored so far...";
     infoMsg += "<br/>We're off to a good start!"
     infoMsg += "<p>Thanks so much to <em>" + lastDonorName + "</em> for the recent sponsor<br/>and to everyone for your support.</p>"
     infoWindow = new google.maps.InfoWindow({
     	content: infoMsg
     });
     infoWindow.open(map, marker);
+	
+	// Show option to replay awesome animation
+	$("#play_animation").show(1000);
   }
 }
 
@@ -243,7 +254,7 @@ function getLatLngFromDistance(targetDist)
 
 function getFundraiserDetails()
 {
-	theUrl = "https://api.justgiving.com/334bc1c7/v1/fundraising/pages/Sian-Oakley0/donations?pagesize=100";
+	theUrl = "https://api.justgiving.com/334bc1c7/v1/fundraising/pages/gndean/donations?pagesize=100";
 	var xmlHttp = new XMLHttpRequest();
   xmlHttp.onreadystatechange = function() { 
     if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
@@ -257,7 +268,10 @@ function getFundraiserDetails()
       	totalDonations += parseFloat(don[d].amount);
         lastDonorName = don[d].donorDisplayName;
       }
-      document.getElementById("distance").value = totalDonations;
+	  totalDonations = 1200;
+	  
+	  // Start the animation in a little bit
+	  setTimeout(function(){ startAnimation(); }, 3000);
     }
   }
   xmlHttp.open("GET", theUrl, true); // true for asynchronous 
