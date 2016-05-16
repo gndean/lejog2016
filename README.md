@@ -14,4 +14,4 @@ Created for a Land's End to John O'Groats (LEJOG) charity ride. Hosted here in c
 
 ## How to customise
 
-TODO
+Edit the javascripts/config.js file with your details

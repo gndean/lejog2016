@@ -26,8 +26,8 @@ var routeWaypoints = [
 	[58.6373368, -3.0688997]
 ];
 
-var ROUTE_DISTANCE = 1000; // Set to fix distance of route, rather than calculate via Google Maps
-var CURRENCY_TO_DISTANCE = 1.0;
+var ROUTE_DISTANCE = 1000; // Set to fix distance of route. Set to null to calculate via Google Map
+var CURRENCY_TO_DISTANCE = 1.0; // One unit of donation corresponds to this many units of distance
 
 var DISTANCE_UNIT_NAME = "miles"; var DISTANCE_UNIT_TO_METRES = 1609.34;
 //var DISTANCE_UNIT_NAME = "km"; var DISTANCE_UNIT_TO_METRES = 1000;
@@ -44,4 +44,5 @@ var markerIcons = [
 	"https://pedalthe.bike/images/cycle-anim-n.gif"		// North-West
 ];
 
+// Set your own URL here. Currently only supports JustGiving. Set page size to 100 to get all donations in one hit
 var fundraiserUrl = "https://api.justgiving.com/334bc1c7/v1/fundraising/pages/gndean/donations?pagesize=100";
