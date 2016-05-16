@@ -1,4 +1,3 @@
-var MILES_TO_METRES = 1609.34;
 var DEG_TO_RAD = 0.0174533;
 
 var map;
@@ -11,20 +10,6 @@ var markerLatLngHistory = []
 // The following are populated on response to the fundraiser API
 var totalDonations = null;
 var lastDonorName = null;
-
-var summaryMsgs = [
-	["Some way to go yet!", "Just getting started!", "A long way to go yet!"], // 0%
-	["A great start!", "Underway now!", "Just getting warmed up!"], // 10%
-	["Around quarter distance", "Get the rhythm now!", "In the groove!"], // 20%
-	["Making progress!", "Carvin' up the miles!", "In the flow!"], // 30%
-	["Approaching half way!", "Going strong!", "Making progress!"], // 40%
-	["Over half way!", "Broken the back of it now!", "Entering the second half"], // 50%
-	["Going strong!", "Wow!", "Full of momentum now!"], // 60%
-	["Really getting there!", "Not too far to go now!", "C'mon!"], // 70%
-	["Into the last quarter now!", "Not far now!", "Keep giving!"], // 80%
-	["On the home straight now!", "Can almost walk from here!", "Just one final push!"], // 90%
-	["Amazing job!", "Wow! Done it!", "Superb effort!"] // 100%
-];
 	
 
 function initialize() {
@@ -50,51 +35,16 @@ function initialize() {
 
 function calcRoute(directionsDisplay) {
 
+	
+	start = new google.maps.LatLng(routeWaypoints[0][0], routeWaypoints[0][1]);
+	end = new google.maps.LatLng(routeWaypoints[routeWaypoints.length - 1][0], routeWaypoints[routeWaypoints.length - 1][1]);
     var waypts = [];
-
-    stop = new google.maps.LatLng(50.263195, -5.051041)
-    waypts.push({
-        location: stop,
-        stopover: true
-    });
-    stop = new google.maps.LatLng(51.209347, -2.6445979)
-    waypts.push({
-        location: stop,
-        stopover: true
-    });
-    stop = new google.maps.LatLng(51.6980375, -2.6813804)
-    waypts.push({
-        location: stop,
-        stopover: true
-    });
-    stop = new google.maps.LatLng(52.628385, -2.481324)
-    waypts.push({
-        location: stop,
-        stopover: true
-    });
-    stop = new google.maps.LatLng(53.5768647, -2.4282192)
-    waypts.push({
-        location: stop,
-        stopover: true
-    });
-    stop = new google.maps.LatLng(54.204919, -2.60171)
-    waypts.push({
-        location: stop,
-        stopover: true
-    });
-    stop = new google.maps.LatLng(54.942631, -2.736329)
-    waypts.push({
-        location: stop,
-        stopover: true
-    });
-    stop = new google.maps.LatLng(55.653071, -3.193642)
-    waypts.push({
-        location: stop,
-        stopover: true
-    });
-    
-    start = new google.maps.LatLng(50.0662735, -5.7143464);
-    end = new google.maps.LatLng(58.6373368, -3.0688997);
+	for (w = 1;w < routeWaypoints.length - 1;w++) {
+		waypts.push({
+			location: new google.maps.LatLng(routeWaypoints[w][0], routeWaypoints[w][1]),
+			stopover: true
+		});
+	}
     
     createMarker(map, start);
         
@@ -122,7 +72,7 @@ function createMarker(map, latlng) {
         position: latlng,
         map: map,
         icon: {
-        	url: "https://pedalthe.bike/images/cycle-anim-e.gif",
+        	url: markerIcons[2], // Start facing East
           anchor: new google.maps.Point(18, 26)
         },
         optimized:true // Set to false to animate the gif
@@ -130,19 +80,24 @@ function createMarker(map, latlng) {
 }
 
 function startAnimation() {
-  var targetDist = totalDonations
-  targetDist *= MILES_TO_METRES;
+  var targetDist = totalDonations * CURRENCY_TO_DISTANCE;
+  targetDist *= DISTANCE_UNIT_TO_METRES;
   
   // Validate stuff
   if (!route || !route.legs) {
   	return
   }
   
-  var totalDist = 0;
-  for (l = 0;l < route.legs.length;l++) {
-  	totalDist += route.legs[l].distance.value;
+  if (ROUTE_DISTANCE) {
+	  totalDist = ROUTE_DISTANCE * DISTANCE_UNIT_TO_METRES;
   }
-  
+  else {
+	  var totalDist = 0;
+	  for (l = 0;l < route.legs.length;l++) {
+		totalDist += route.legs[l].distance.value;
+	  }
+  }
+
   // Clamp targetDist to known bounds
   targetDist = Math.min(totalDist, targetDist)
   targetDist = Math.max(0, targetDist)
@@ -167,6 +122,7 @@ function startAnimation() {
 
 // Return the initial bearing from a great circle from lat1,lng1 to lat2,lng2
 // Inputs and return in degrees
+// Returns in the range [0, 360) where 0 is North
 function getBearing(lat1, lng1, lat2, lng2)
 {
 	// Convert degrees to radians
@@ -178,7 +134,7 @@ function getBearing(lat1, lng1, lat2, lng2)
   var y = Math.sin(lt2-lt1) * Math.cos(lg2);
   var x = Math.cos(lg1)*Math.sin(lg2) -
           Math.sin(lg1)*Math.cos(lg2)*Math.cos(lt2-lt1);
-  return Math.atan2(y, x) / DEG_TO_RAD;
+  return (Math.atan2(x, y) / DEG_TO_RAD + 360) % 360;
 }
 
 function animateMarker(targetDist, step, totalDist)
@@ -196,20 +152,13 @@ function animateMarker(targetDist, step, totalDist)
     var startStep = Math.max(0, step - BEARING_STEPS);
     if (step > startStep) {
     	var bearing = getBearing(markerLatLngHistory[startStep].lat(), markerLatLngHistory[startStep].lng(), markerLatLng.lat(), markerLatLng.lng());
+		
+		// Convert bearing into most appropriate icon
+		var iconIndex = Math.floor((bearing + 22) * 8 / 360) % 8;
+		marker.icon.url = markerIcons[iconIndex];
+	}
       
-      // Convert bearing into most appropriate icon
-      if (bearing > 67) {
-      	marker.icon.url = "https://pedalthe.bike/images/cycle-anim-n.gif";
-      }
-      else if (bearing > 22) {
-      	marker.icon.url = "https://pedalthe.bike/images/cycle-anim-ne.gif";
-      }
-      else {
-      	marker.icon.url = "https://pedalthe.bike/images/cycle-anim-e.gif";
-      }
-    }
-
-		step++;
+	step++;
     
     markerTimerHandle = setTimeout(function(){animateMarker(targetDist, step, totalDist)}, 100);
   }
@@ -219,7 +168,7 @@ function animateMarker(targetDist, step, totalDist)
   	marker.optimized = true;
     
     // Display a summary message
-    infoMsg = Math.round(totalDonations) + " out of " + Math.round(totalDist / MILES_TO_METRES) + " miles sponsored so far...";
+    infoMsg = Math.round(totalDonations * CURRENCY_TO_DISTANCE) + " out of " + Math.round(totalDist / DISTANCE_UNIT_TO_METRES) + " " + DISTANCE_UNIT_NAME + " sponsored so far...";
 	
 	// Choose an appropriate message
 	var msgIndex = Math.floor(targetDist * (summaryMsgs.length - 1) / totalDist);
@@ -277,9 +226,8 @@ function getLatLngFromDistance(targetDist)
 
 function getFundraiserDetails()
 {
-	theUrl = "https://api.justgiving.com/334bc1c7/v1/fundraising/pages/gndean/donations?pagesize=100";
 	var xmlHttp = new XMLHttpRequest();
-  xmlHttp.onreadystatechange = function() { 
+	xmlHttp.onreadystatechange = function() { 
     if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
     {
       var ret = JSON.parse(xmlHttp.responseText);
@@ -296,7 +244,7 @@ function getFundraiserDetails()
 	  setTimeout(function(){ startAnimation(); }, 3000);
     }
   }
-  xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+  xmlHttp.open("GET", fundraiserUrl, true); // true for asynchronous 
   xmlHttp.setRequestHeader("Accept", "application/json");
   xmlHttp.send(null);
 }
