@@ -17,3 +17,8 @@
 	box-shadow: none;
 	border: none;
 }
+
+#avatar_thumb {
+	float:left;
+	padding:10px;
+}

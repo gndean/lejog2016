@@ -4,9 +4,12 @@ A cycle ride fundraiser page with animated Google Map of route to display total 
 
 Created for a Land's End to John O'Groats (LEJOG) charity ride. Hosted here in case it's useful for anyone else to use.
 
+Currently hosted at [pedalthe.bike](https://pedalthe.bike)
+
 ## Limitations
 
 * The cyclist animation currently only differentiates between directions: north, north east and east
+* Only supports JustGiving API, no other fundraiser sites
 
 ## Notes
 
@@ -14,4 +17,6 @@ Created for a Land's End to John O'Groats (LEJOG) charity ride. Hosted here in c
 
 ## How to customise
 
-Edit the javascripts/config.js file with your details
+* Edit the index.html file for your own story. Don't forget to link to _your_ fundraiser site.
+* Edit the javascripts/config.js file with the details of your route.
+* Host as you wish. I used pages.github.com and a custom domain
