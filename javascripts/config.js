@@ -51,6 +51,7 @@
 	];
 
 	// Set your own URL here. Currently only supports JustGiving. Set page size to 100 to get all donations in one hit
-	lejog.fundraiserUrl = "https://api.justgiving.com/334bc1c7/v1/fundraising/pages/gndean/donations?pagesize=100";
+	lejog.donationsUrl = "https://api.justgiving.com/334bc1c7/v1/fundraising/pages/gndean/donations?pagesize=100";
+	lejog.fundraiserPageUrl = "https://api.justgiving.com/334bc1c7/v1/fundraising/pages/gndean";
 }
 ( window.lejog = window.lejog || {}, jQuery ));

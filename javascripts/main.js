@@ -229,27 +229,37 @@
 
 	function getFundraiserDetails()
 	{
+		// Get last donation
 		var xmlHttp = new XMLHttpRequest();
 		xmlHttp.onreadystatechange = function() { 
-		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-		{
-		  var ret = JSON.parse(xmlHttp.responseText);
-		  var don = ret.donations;
-		  don = don.sort(function(a,b) {return (a.id > b.id) ? 1 : ((b.id > a.id) ? -1 : 0);} );
-		  
-		  totalDonations = 0;
-		  for (d = 0;d < don.length;d++) {
-			totalDonations += parseFloat(don[d].amount);
-			lastDonorName = don[d].donorDisplayName;
-		  }
-		  
-		  // Start the animation in a little bit
-		  setTimeout(function(){ startAnimation(); }, 3000);
-		}
-	  }
-	  xmlHttp.open("GET", lejog.fundraiserUrl, true); // true for asynchronous 
-	  xmlHttp.setRequestHeader("Accept", "application/json");
-	  xmlHttp.send(null);
+			if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+			{
+				var ret = JSON.parse(xmlHttp.responseText);
+				var don = ret.donations;
+				// Sort by most recent first to get most recent donor
+				don = don.sort(function(a,b) {return (a.id < b.id) ? 1 : ((b.id < a.id) ? -1 : 0);} );
+
+				lastDonorName = don[0].donorDisplayName;
+
+				// Now get donation total
+				xmlHttp.onreadystatechange = function() { 
+					if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+					{
+						ret = JSON.parse(xmlHttp.responseText);
+						totalDonations = ret.grandTotalRaisedExcludingGiftAid;
+									  
+						// Start the animation in a little bit
+						setTimeout(function(){ startAnimation(); }, 2000);
+					}
+				};
+				xmlHttp.open("GET", lejog.fundraiserPageUrl, true); // true for asynchronous 
+				xmlHttp.setRequestHeader("Accept", "application/json");
+				xmlHttp.send(null);
+			}
+		};
+	    xmlHttp.open("GET", lejog.donationsUrl, true); // true for asynchronous 
+	    xmlHttp.setRequestHeader("Accept", "application/json");
+	    xmlHttp.send(null);
 	}
 }
 ( window.lejog = window.lejog || {}, jQuery ));
